@@ -1,0 +1,33 @@
+services:
+  back:
+    image: inksne/wb-back-image:latest
+    container_name: back-container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "10000:10000"
+    env_file:
+      - ./.env
+    command: ["python", "main.py"]
+    restart: always
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+    networks:
+      - app-network
+
+networks:
+  app-network:
